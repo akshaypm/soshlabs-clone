@@ -11,6 +11,7 @@ export type AiPingResult = {
 };
 
 export type AiProviderConfig = {
+  nodeEnv?: string | undefined;
   anthropicApiKey?: string | undefined;
   anthropicModel?: string | undefined;
 };
@@ -23,6 +24,9 @@ export abstract class AiProvider {
 
   static create(config: AiProviderConfig): AiProvider {
     if (!config.anthropicApiKey) {
+      if (config.nodeEnv === "production") {
+        throw new Error("Refusing to start in production. Missing ANTHROPIC_API_KEY");
+      }
       return new FakeAiProvider();
     }
     if (!config.anthropicModel) {

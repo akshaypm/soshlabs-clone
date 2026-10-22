@@ -5,6 +5,7 @@ export type VerifiedSession = {
 };
 
 export interface TokenVerifier {
+  readonly name: string;
   verify(token: string): Promise<VerifiedSession>;
 }
 
@@ -21,12 +22,14 @@ export class TokenVerificationError extends Error {
 }
 
 type ClerkVerifierConfig = {
+  nodeEnv?: string | undefined;
   clerkSecretKey?: string | undefined;
   clerkJwtKey?: string | undefined;
   clerkAuthorizedParties: readonly string[];
 };
 
 export class ClerkTokenVerifier implements TokenVerifier {
+  readonly name = "clerk";
   private readonly options: VerifyTokenOptions;
 
   private constructor(options: VerifyTokenOptions) {
@@ -35,6 +38,9 @@ export class ClerkTokenVerifier implements TokenVerifier {
 
   static fromConfig(config: ClerkVerifierConfig): TokenVerifier {
     if (!config.clerkSecretKey && !config.clerkJwtKey) {
+      if (config.nodeEnv === "production") {
+        throw new Error("Refusing to start in production. Missing CLERK_SECRET_KEY or CLERK_JWT_KEY");
+      }
       return new UnconfiguredTokenVerifier();
     }
     const options: VerifyTokenOptions = {};
@@ -100,6 +106,8 @@ export class ClerkTokenVerifier implements TokenVerifier {
 }
 
 class UnconfiguredTokenVerifier implements TokenVerifier {
+  readonly name = "unconfigured";
+
   async verify(): Promise<VerifiedSession> {
     throw new TokenVerificationError("unconfigured");
   }

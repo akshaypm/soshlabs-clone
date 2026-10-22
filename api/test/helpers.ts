@@ -7,6 +7,8 @@ import { ApiServer } from "../src/server.js";
 import type { MembershipRole, PrismaClient } from "../src/generated/prisma/client.js";
 
 export class MapTokenVerifier implements TokenVerifier {
+  readonly name = "test";
+
   constructor(private readonly tokens: ReadonlyMap<string, string>) {}
 
   async verify(token: string): Promise<VerifiedSession> {
@@ -96,6 +98,7 @@ export class TestHarness {
     const config = ApiConfig.fromEnv({
       ...process.env,
       DATABASE_URL: databaseUrl,
+      NODE_ENV: "test",
       LOG_LEVEL: "silent",
       ANTHROPIC_API_KEY: "",
       ANTHROPIC_MODEL: "",

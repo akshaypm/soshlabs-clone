@@ -34,6 +34,14 @@ export class ApiServer {
     });
 
     app.decorate("ai", ai);
+    app.log.info(
+      {
+        aiProvider: ai.name,
+        aiModel: ai.model,
+        tokenVerifier: verifier.name,
+      },
+      "integrations ready",
+    );
     ApiErrors.install(app);
     SessionAuth.install(app, { verifier, prisma });
     await RootRoutes.register(app);

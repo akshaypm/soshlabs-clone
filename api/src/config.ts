@@ -82,18 +82,49 @@ export class ApiConfig {
       throw new Error("Invalid environment: ANTHROPIC_MODEL");
     }
 
+    const nodeEnv = parsed.data.NODE_ENV ?? "development";
+    const clerkSecretKey = parsed.data.CLERK_SECRET_KEY;
+    const clerkJwtKey = parsed.data.CLERK_JWT_KEY;
+    ApiConfig.requireProductionSecrets({
+      nodeEnv,
+      anthropicApiKey,
+      clerkSecretKey,
+      clerkJwtKey,
+    });
+
     return new ApiConfig({
       databaseUrl,
       port: ApiConfig.portFrom(parsed.data.PORT),
       host: parsed.data.HOST ?? "0.0.0.0",
       logLevel: parsed.data.LOG_LEVEL ?? "info",
-      nodeEnv: parsed.data.NODE_ENV ?? "development",
-      clerkSecretKey: parsed.data.CLERK_SECRET_KEY,
-      clerkJwtKey: parsed.data.CLERK_JWT_KEY,
+      nodeEnv,
+      clerkSecretKey,
+      clerkJwtKey,
       clerkAuthorizedParties: ApiConfig.partiesFrom(parsed.data.CLERK_AUTHORIZED_PARTIES),
       anthropicApiKey,
       anthropicModel,
     });
+  }
+
+  private static requireProductionSecrets(values: {
+    nodeEnv: string;
+    anthropicApiKey: string | undefined;
+    clerkSecretKey: string | undefined;
+    clerkJwtKey: string | undefined;
+  }): void {
+    if (values.nodeEnv !== "production") {
+      return;
+    }
+    const missing: string[] = [];
+    if (!values.anthropicApiKey) {
+      missing.push("ANTHROPIC_API_KEY");
+    }
+    if (!values.clerkSecretKey && !values.clerkJwtKey) {
+      missing.push("CLERK_SECRET_KEY or CLERK_JWT_KEY");
+    }
+    if (missing.length > 0) {
+      throw new Error(`Refusing to start in production. Missing ${missing.join(", ")}`);
+    }
   }
 
   private static blankToUndefined(value: string | undefined): string | undefined {

@@ -135,12 +135,12 @@ API variables live in `api/.env.example` (names and the local Postgres URL only)
 | `PORT` | optional | Default `4000` |
 | `HOST` | optional | Default `0.0.0.0` |
 | `LOG_LEVEL` | optional | Default `info` |
-| `NODE_ENV` | optional | Default `development` |
-| `CLERK_SECRET_KEY` | real auth | Clerk **test** secret. Fetches JWKS when `CLERK_JWT_KEY` is unset |
-| `CLERK_JWT_KEY` | real auth | PEM public key. Verifies session JWTs without calling Clerk |
+| `NODE_ENV` | optional | Default `development`. `production` refuses to start without Claude and Clerk configured |
+| `CLERK_SECRET_KEY` | real auth | Clerk **test** secret. Fetches JWKS when `CLERK_JWT_KEY` is unset. Required in production if `CLERK_JWT_KEY` is unset |
+| `CLERK_JWT_KEY` | real auth | PEM public key. Verifies session JWTs without calling Clerk. Required in production if `CLERK_SECRET_KEY` is unset |
 | `CLERK_AUTHORIZED_PARTIES` | optional | Comma-separated `azp` allowlist |
-| `ANTHROPIC_API_KEY` | Claude | Unset → `FakeAiProvider` |
-| `ANTHROPIC_MODEL` | with the key | Required when the key is set |
+| `ANTHROPIC_API_KEY` | Claude | Unset in development or test → `FakeAiProvider`. Required in production |
+| `ANTHROPIC_MODEL` | with the key | Required when the key is set, and in production |
 
 Tests do not need Clerk or Anthropic keys. S3 and Stripe variables are not read yet.
 

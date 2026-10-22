@@ -186,8 +186,8 @@ function MarketingNav() {
       left={0}
       right={0}
       zIndex="banner"
-      bg="transparent"
       backdropFilter="blur(12px)"
+      {...SiteChrome.openMenuSurface(isOpen)}
     >
       <Container maxW="8xl" px={{ base: 4, md: 8 }}>
         <Flex align="center" justify="space-between" gap={3} py={3}>
@@ -216,7 +216,7 @@ function MarketingNav() {
         </Flex>
         <Box display={{ base: "block", md: "none" }}>
           <Collapse in={isOpen} animateOpacity>
-            <Stack id={SiteChrome.menuId} spacing={1} pb={4} align="stretch">
+            <Stack id={SiteChrome.menuId} spacing={1} pb={4} align="stretch" bg="bg.surface">
               {SiteChrome.primaryLinks().map((link) => (
                 <SiteAnchor
                   key={link.href}

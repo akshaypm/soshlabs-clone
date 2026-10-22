@@ -105,4 +105,18 @@ export class SiteChrome {
       },
     } as const;
   }
+
+  /**
+   * Opaque sheet for the open mobile menu. Desktop stays transparent.
+   * `bg.surface` is solid in both color modes, so page copy cannot show through.
+   */
+  static openMenuSurface(isOpen: boolean) {
+    return {
+      bg: { base: isOpen ? "bg.surface" : "transparent", md: "transparent" },
+      borderBottomWidth: { base: isOpen ? "1px" : "0", md: "0" },
+      borderBottomStyle: "solid" as const,
+      borderBottomColor: "border.default",
+      boxShadow: { base: isOpen ? "soft-sm" : "none", md: "none" },
+    };
+  }
 }
